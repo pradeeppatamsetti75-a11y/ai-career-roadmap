@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Career Roadmap & Skill Gap Finder</title>
+  <link rel="icon" href="https://img.icons8.com/color/96/compass--v1.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-hover: #1D4ED8;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --success: #16A34A;
+      --success-bg: #DCFCE7;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 24px 16px;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* Header */
+    header { text-align: center; margin-bottom: 24px; }
+    .badge-header {
+      display: inline-block;
+      background: #EFF6FF;
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid #BFDBFE;
+      margin-bottom: 10px;
+    }
+    h1 { font-size: 2.2rem; font-weight: 800; color: #1E3A8A; margin-bottom: 6px; }
+    header p { font-size: 1.05rem; color: var(--text-muted); }
+
+    /* Settings Bar */
+    .settings-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    .settings-group { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 280px; }
+    .settings-group label { font-weight: 600; font-size: 0.9rem; white-space: nowrap; }
+    .settings-group input[type="password"] {
+      flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem; outline: none;
+    }
+    .settings-group input[type="password"]:focus { border-color: var(--primary); }
+    .demo-toggle { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; }
+
+    /* Inputs Grid */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 220px;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 860px) {
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    textarea, input[type="text"], select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    textarea:focus, input[type="text"]:focus, select:focus { border-color: var(--primary); }
+
+    /* Action Button */
+    .btn-container { text-align: center; margin-bottom: 30px; }
+    .btn-primary {
+      background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+      color: white;
+      border: none;
+      padding: 14px 36px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Results */
+    #results { display: none; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .summary-banner {
+      background: #EFF6FF;
+      border-left: 5px solid var(--primary);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+      color: #1E3A8A;
+    }
+
+    /* Skills Table */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    th {
+      background: #F1F5F9;
+      color: #334155;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--border);
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .priority-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .prio-high { background: #FEE2E2; color: #991B1B; }
+    .prio-medium { background: #FEF3C7; color: #92400E; }
+
+    /* Roadmap Grid */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 720px) {
+      .roadmap-grid { grid-template-columns: 1fr; }
+    }
+    .week-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--primary);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+    .week-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1E3A8A;
+      margin-bottom: 6px;
+    }
+    .week-topics {
+      margin-left: 20px;
+      font-size: 0.88rem;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+    .milestone-badge {
+      display: inline-block;
+      background: #EFF6FF;
+      color: #1D4ED8;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1px solid #BFDBFE;
+    }
+
+    /* Projects Grid */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 860px) {
+      .projects-grid { grid-template-columns: 1fr; }
+    }
+    .project-card {
+      background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
+      border: 1px solid #DBEAFE;
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .project-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1E40AF;
+      margin-bottom: 8px;
+    }
+    .project-desc {
+      font-size: 0.88rem;
+      color: #334155;
+      margin-bottom: 12px;
+      flex-grow: 1;
+    }
+    .tech-pill {
+      display: inline-block;
+      background: #DBEAFE;
+      color: #1E40AF;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 4px;
+      margin-top: 4px;
+    }
+
+    .btn-secondary {
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #CBD5E1;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 24px;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { background: #E2E8F0; }
+
+    .spinner {
+      display: none;
+      margin: 16px auto;
+      width: 36px;
+      height: 36px;
+      border: 4px solid #E2E8F0;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge-header">Task 2 • Prototype 4</div>
+      <h1>🧭 AI Career Roadmap & Skill Gap Finder</h1>
+      <p>Compare current skills with your target job role and get an AI-generated 8-week learning plan & portfolio projects.</p>
+    </header>
+
+    <!-- Settings & Presets -->
+    <div class="settings-bar">
+      <div class="settings-group">
+        <label for="apiKey">Gemini API Key:</label>
+        <input type="password" id="apiKey" placeholder="AIzaSy... (Get free key from aistudio.google.com)">
+      </div>
+      <div style="display: flex; gap: 16px; align-items: center;">
+        <select id="presetSelect" onchange="applyPreset()" style="padding: 6px 10px; font-size: 0.85rem; border-radius: 6px;">
+          <option value="custom">Preset: Custom Goal</option>
+          <option value="datascience" selected>Preset: Fresher to Data Scientist</option>
+          <option value="fullstack">Preset: Web Beginner to Full Stack Dev</option>
+          <option value="devops">Preset: Student to Cloud/DevOps</option>
+        </select>
+        <label class="demo-toggle">
+          <input type="checkbox" id="demoMode" checked>
+          🧪 Demo Mode
+        </label>
+      </div>
+    </div>
+
+    <!-- Inputs -->
+    <div class="grid-3">
+      <!-- Current Skills -->
+      <div class="card">
+        <div class="card-title">
+          <span>📝</span> 1. Current Skills
+        </div>
+        <textarea id="currentSkills" rows="5" placeholder="e.g. C, basic Python, HTML, basic SQL, Git">C, basic Python, linear algebra, Excel, HTML, basic SQL</textarea>
+      </div>
+
+      <!-- Target Role -->
+      <div class="card">
+        <div class="card-title">
+          <span>🎯</span> 2. Target Job Role
+        </div>
+        <input type="text" id="targetRole" value="Data Scientist" placeholder="e.g. Data Scientist, Full Stack Developer">
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
+          Define your target career goal so Gemini can calculate the exact industry requirements.
+        </p>
+      </div>
+
+      <!-- Study Hours -->
+      <div class="card">
+        <div class="card-title">
+          <span>⏱️</span> 3. Time Available
+        </div>
+        <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">
+          Hours / Week: <strong id="hoursDisplay" style="color: var(--primary);">12 hrs</strong>
+        </label>
+        <input type="range" id="hoursSlider" min="4" max="40" step="2" value="12" oninput="document.getElementById('hoursDisplay').textContent = this.value + ' hrs'" style="width: 100%;">
+        <div style="font-size: 0.8rem; color: #166534; background: #DCFCE7; padding: 6px; border-radius: 6px; margin-top: 10px; text-align: center; font-weight: 600;">
+          96 Total Study Hours
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Button -->
+    <div class="btn-container">
+      <button class="btn-primary" id="generateBtn" onclick="generateRoadmap()">
+        <span>🚀</span> Generate 8-Week Roadmap & Skill Gap
+      </button>
+      <div id="spinner" class="spinner"></div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results">
+      <!-- Strategy Banner -->
+      <div class="summary-banner" id="summaryBanner"></div>
+
+      <!-- Skills Gap Analysis -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-title" style="color: #1E3A8A;">
+          <span>📊</span> 1. Skill Gap Analysis: What You Have vs What to Learn
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+          <div>
+            <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--success);">✅ Skills You Already Have</h4>
+            <ul id="skillsHaveList" style="margin-left: 20px; font-size: 0.9rem; color: #334155;"></ul>
+          </div>
+          <div>
+            <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: #1D4ED8;">🎯 Skills to Learn (Priority & Reason)</h4>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Skill to Learn</th>
+                    <th>Priority</th>
+                    <th>Why It Matters</th>
+                  </tr>
+                </thead>
+                <tbody id="skillsLearnBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8-Week Roadmap -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-title" style="color: #1E3A8A;">
+          <span>🗓️</span> 2. 8-Week Week-by-Week Learning Roadmap
+        </div>
+        <div class="roadmap-grid" id="roadmapGrid"></div>
+      </div>
+
+      <!-- 3 Mini Projects -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-title" style="color: #1E3A8A;">
+          <span>🛠️</span> 3. Portfolio Mini Project Ideas
+        </div>
+        <div class="projects-grid" id="projectsGrid"></div>
+      </div>
+
+      <!-- Download Button -->
+      <div style="text-align: center;">
+        <button class="btn-secondary" onclick="downloadRoadmap()">
+          <span>📥</span> Download Full Roadmap & Career Plan (.txt)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentData = null;
+
+    function applyPreset() {
+      const p = document.getElementById('presetSelect').value;
+      if (p === 'datascience') {
+        document.getElementById('currentSkills').value = "C programming, basic Python, linear algebra, Excel, HTML, basic SQL";
+        document.getElementById('targetRole').value = "Data Scientist";
+        document.getElementById('hoursSlider').value = 14;
+        document.getElementById('hoursDisplay').textContent = "14 hrs";
+      } else if (p === 'fullstack') {
+        document.getElementById('currentSkills').value = "HTML, CSS, basic JavaScript, Git";
+        document.getElementById('targetRole').value = "Full Stack Web Developer";
+        document.getElementById('hoursSlider').value = 12;
+        document.getElementById('hoursDisplay').textContent = "12 hrs";
+      } else if (p === 'devops') {
+        document.getElementById('currentSkills').value = "Linux basics, Python scripting, Git, basic networking";
+        document.getElementById('targetRole').value = "Cloud / DevOps Engineer";
+        document.getElementById('hoursSlider').value = 10;
+        document.getElementById('hoursDisplay').textContent = "10 hrs";
+      }
+    }
+
+    async function generateRoadmap() {
+      const currentSkills = document.getElementById('currentSkills').value.trim();
+      const targetRole = document.getElementById('targetRole').value.trim();
+      const hours = document.getElementById('hoursSlider').value;
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const demoMode = document.getElementById('demoMode').checked;
+
+      if (!currentSkills || !targetRole) {
+        alert("Please enter both your current skills and target role.");
+        return;
+      }
+
+      const btn = document.getElementById('generateBtn');
+      const spinner = document.getElementById('spinner');
+      const results = document.getElementById('results');
+
+      btn.disabled = true;
+      spinner.style.display = 'block';
+      results.style.display = 'none';
+
+      try {
+        if (demoMode || !apiKey) {
+          await new Promise(r => setTimeout(r, 800));
+          currentData = {
+            summary: `With ${hours} hours per week, you can successfully transition from your current programming foundation to an entry-level ${targetRole} within 8 structured weeks.`,
+            skills_have: [
+              "C Programming (Algorithmic Logic)",
+              "Basic Python Syntax",
+              "Linear Algebra & Excel",
+              "HTML & Web Basics",
+              "Basic SQL Queries"
+            ],
+            skills_to_learn: [
+              { skill: "Advanced Pandas & NumPy", importance: "High", why: "Essential for data cleaning, transformation, and vector operations." },
+              { skill: "Statistical Modeling & Probability", importance: "High", why: "Foundational mathematical intuition behind ML algorithms." },
+              { skill: "Scikit-Learn Machine Learning", importance: "High", why: "Industry-standard toolkit for regression, classification, and clustering." },
+              { skill: "Data Visualization (Seaborn & Matplotlib)", importance: "Medium", why: "Required to deliver actionable insights to stakeholders." },
+              { skill: "Model Evaluation (ROC-AUC, F1, RMSE)", importance: "Medium", why: "Evaluating model accuracy and preventing overfitting." },
+              { skill: "Streamlit / Model Deployment", importance: "Medium", why: "Creating interactive web apps to demonstrate your models." }
+            ],
+            roadmap: [
+              { week: 1, title: "Week 1: Advanced Python & Math Foundations", topics: ["List comprehensions & generators", "NumPy vectorization & matrix algebra", "Descriptive statistics with Python"], milestone: "Build 5 statistical data computation scripts in NumPy." },
+              { week: 2, title: "Week 2: Data Wrangling with Pandas", topics: ["DataFrame filtering & indexing", "Handling missing & dirty data", "GroupBy aggregations & joining datasets"], milestone: "Clean and transform a messy real-world CSV dataset." },
+              { week: 3, title: "Week 3: Exploratory Data Analysis & Viz", topics: ["Matplotlib & Seaborn distribution charts", "Correlation heatmaps & feature trends", "Outlier detection strategies"], milestone: "Produce a complete EDA notebook with 8 visual charts." },
+              { week: 4, title: "Week 4: Supervised Learning - Regression", topics: ["Linear, Ridge & Lasso regression", "Train/test split & cross-validation", "Evaluating MAE, MSE, and R-squared"], milestone: "Build and evaluate a House Price Estimator model." },
+              { week: 5, title: "Week 5: Classification Algorithms", topics: ["Logistic Regression & Decision Trees", "Random Forest ensembles", "Confusion Matrix & F1-score"], milestone: "Train a Customer Churn Classifier with full report." },
+              { week: 6, title: "Week 6: Unsupervised Learning & Preprocessing", topics: ["K-Means clustering & PCA", "One-hot encoding & feature scaling", "Dimensionality reduction"], milestone: "Cluster customer transaction data into 4 distinct segments." },
+              { week: 7, title: "Week 7: Capstone Project & Streamlit UI", topics: ["Saving models with joblib", "Building interactive UI with Streamlit", "Input validation and error handling"], milestone: "Deploy a live ML interactive web app." },
+              { week: 8, title: "Week 8: Portfolio Polish & Interview Prep", topics: ["GitHub repository structuring & README", "Live hosting on Streamlit Community Cloud", "Mock interview technical and behavioral prep"], milestone: "Publish 3 documented projects on your GitHub portfolio." }
+            ],
+            mini_projects: [
+              {
+                title: "1. E-Commerce Customer Churn Predictor",
+                description: "Predict customer churn probability using Scikit-learn Random Forests with an interactive Streamlit dashboard.",
+                skills_used: ["Python", "Pandas", "Scikit-Learn", "Streamlit", "Classification"]
+              },
+              {
+                title: "2. Real Estate Valuation Engine",
+                description: "A regression model that predicts house pricing based on amenities and square footage, complete with interactive EDA visuals.",
+                skills_used: ["NumPy", "Pandas", "Seaborn", "Linear Regression", "Feature Engineering"]
+              },
+              {
+                title: "3. Credit Card Fraud Detection Pipeline",
+                description: "An anomaly detection model addressing class imbalance using SMOTE and evaluating ROC-AUC performance.",
+                skills_used: ["Scikit-Learn", "SMOTE", "ROC-AUC", "Git", "Model Evaluation"]
+              }
+            ]
+          };
+        } else {
+          // Live Gemini API
+          const prompt = `You are an expert Career Counselor.
+Target Job Role: ${targetRole}
+Current Skills: ${currentSkills}
+Hours/Week: ${hours}
+
+Analyze the skill gaps and create an 8-week learning plan and 3 mini project ideas.
+Respond ONLY with a valid JSON strictly matching:
+{
+  "summary": "<2-sentence summary>",
+  "skills_have": ["<skill1>", "<skill2>"],
+  "skills_to_learn": [{"skill": "<s1>", "importance": "High", "why": "<why>"}],
+  "roadmap": [{"week": 1, "title": "<w1>", "topics": ["<t1>", "<t2>"], "milestone": "<m1>"}],
+  "mini_projects": [{"title": "<p1>", "description": "<desc>", "skills_used": ["<s1>"]}]
+}
+Return raw JSON only.`;
+
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+          });
+
+          if (!res.ok) throw new Error(res.statusText);
+          const data = await res.json();
+          let raw = data.candidates[0].content.parts[0].text;
+          const s = raw.indexOf('{');
+          const e = raw.lastIndexOf('}');
+          if (s !== -1 && e !== -1) raw = raw.substring(s, e + 1);
+          currentData = JSON.parse(raw);
+        }
+
+        renderRoadmap(currentData);
+      } catch (err) {
+        alert("Generation notice: " + err.message + "\nShowing Demo Mode output.");
+        applyPreset();
+        generateRoadmap();
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = 'none';
+      }
+    }
+
+    function renderRoadmap(data) {
+      document.getElementById('summaryBanner').innerHTML = `💡 <strong>Strategy Overview:</strong> ${data.summary}`;
+
+      // Skills Have
+      const haveList = document.getElementById('skillsHaveList');
+      haveList.innerHTML = '';
+      (data.skills_have || []).forEach(s => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${s}</strong>`;
+        haveList.appendChild(li);
+      });
+
+      // Skills to Learn Table
+      const learnBody = document.getElementById('skillsLearnBody');
+      learnBody.innerHTML = '';
+      (data.skills_to_learn || []).forEach(item => {
+        const tr = document.createElement('tr');
+        const prioClass = (item.importance === 'High') ? 'prio-high' : 'prio-medium';
+        tr.innerHTML = `
+          <td><strong>${item.skill}</strong></td>
+          <td><span class="priority-badge ${prioClass}">${item.importance || 'High'}</span></td>
+          <td style="color: #475569;">${item.why || 'Required for role'}</td>
+        `;
+        learnBody.appendChild(tr);
+      });
+
+      // 8-Week Roadmap
+      const grid = document.getElementById('roadmapGrid');
+      grid.innerHTML = '';
+      (data.roadmap || []).forEach(w => {
+        const div = document.createElement('div');
+        div.className = 'week-card';
+        div.innerHTML = `
+          <div class="week-title">📅 ${w.title}</div>
+          <ul class="week-topics">
+            ${(w.topics || []).map(t => `<li>${t}</li>`).join('')}
+          </ul>
+          <div class="milestone-badge">🏁 <strong>Milestone:</strong> ${w.milestone}</div>
+        `;
+        grid.appendChild(div);
+      });
+
+      // 3 Mini Projects
+      const projGrid = document.getElementById('projectsGrid');
+      projGrid.innerHTML = '';
+      (data.mini_projects || []).slice(0, 3).forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'project-card';
+        div.innerHTML = `
+          <div>
+            <div class="project-title">${p.title}</div>
+            <div class="project-desc">${p.description}</div>
+          </div>
+          <div>
+            ${(p.skills_used || []).map(s => `<span class="tech-pill">${s}</span>`).join('')}
+          </div>
+        `;
+        projGrid.appendChild(div);
+      });
+
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function downloadRoadmap() {
+      if (!currentData) return;
+      const text = `=== AI CAREER ROADMAP & SKILL GAP REPORT ===
+Target Role: ${document.getElementById('targetRole').value}
+Current Skills: ${document.getElementById('currentSkills').value}
+Study Hours: ${document.getElementById('hoursSlider').value} hrs/week
+
+--- STRATEGY SUMMARY ---
+${currentData.summary}
+
+--- SKILLS YOU ALREADY HAVE ---
+${(currentData.skills_have || []).map(s => `✓ ${s}`).join('\n')}
+
+--- SKILLS TO LEARN ---
+${(currentData.skills_to_learn || []).map(s => `• ${s.skill} [${s.importance}]: ${s.why}`).join('\n')}
+
+--- 8-WEEK ROADMAP ---
+${(currentData.roadmap || []).map(w => `
+${w.title}:
+${(w.topics || []).map(t => `  - ${t}`).join('\n')}
+  Milestone: ${w.milestone}`).join('\n')}
+
+--- 3 PORTFOLIO MINI PROJECTS ---
+${(currentData.mini_projects || []).map(p => `
+* ${p.title}
+  ${p.description}
+  Tech Stack: ${(p.skills_used || []).join(', ')}`).join('\n')}`;
+
+      const blob = new Blob([text], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${document.getElementById('targetRole').value.replace(/\s+/g, '_')}_Roadmap.txt`;
+      a.click();
+    }
+  </script>
+</body>
+</html>
